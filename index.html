@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca CEP</title>
+
+</head>
+
+<body>
+    <div id="app">
+        <button @click="showModal = true" class="openModal">Open Modal</button>
+        <div v-if="showModal" class="modal">
+            <div class="modal-content">
+                <span class="close" @click="showModal = false">&times;</span>
+                <h3>Exibir CEP</h3>
+                <form>
+                    <img src="img/cidade.jpeg">
+                <div class="form-group">
+                    <label>CEP</label>
+                    <input v-model="address.cep" type="text" name="cep" @blur="handleCep">
+                </div> <br />
+                <div class="form-group">
+                    <label>Logradouro</label>
+                    <input v-model="address.logradouro" type="text" name="logradouro" disabled>
+                </div> <br />
+                <div class="form-group">
+                    <label>Complemento</label>
+                    <input v-model="address.complemento" type="text" name="complemento" disabled>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label>Bairro</label>
+                    <input v-model="address.bairro" type="text" name="bairro" disabled>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label>Localidade</label>
+                    <input v-model="address.localidade" type="text" name="localidade" disabled>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label>UF</label>
+                    <input v-model="address.uf" type="text" name="uf" disabled>
+                </div>
+                
+            </form>
+               
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    showModal: false,
+                    address: {
+                        cep: '',
+                        logradouro: '',
+                        complemento: '',
+                        bairro: '',
+                        localidade: '',
+                        uf: ''
+                    }
+                }
+            },
+            methods: {
+                async handleCep() {
+                    try {
+                        const response = await fetch(`https://viacep.com.br/ws/${this.address.cep}/json/`)
+                        const data = await response.json()
+
+                        this.address.logradouro = data.logradouro
+                        if (data.complemento == '') {
+                            this.address.complemento = 'Não informado'
+                        } else {
+                            this.address.complemento = data.complemento
+                        }
+                        this.address.bairro = data.bairro
+                        this.address.localidade = data.localidade
+                        this.address.uf = data.uf
+
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+            },
+        }).mount('#app')
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        img{
+            float: right;
+            width: 45%;
+            height: 45%;
+        }
+        .openModal {
+            width: 150px;
+            height: 30px;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: gray;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            height: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+        }
+
+        input {
+            width: 40%;
+        }
+
+        
+    </style>
+</body>
+
+</html>
